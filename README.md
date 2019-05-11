@@ -41,6 +41,15 @@ The architectures supported by this image are:
 | arm64 | arm64v8-latest |
 | armhf | arm32v7-latest |
 
+## Version Tags
+
+This image provides various versions that are available via tags. `latest` tag usually provides the latest stable version. Others are considered under development and caution must be exercised when using them.
+
+| Tag | Description |
+| :----: | --- |
+| latest | Stable Radarr releases |
+| nightly | Nightly Radarr releases |
+| preview | Preview Radarr releases, currently aphrodite |
 
 ## Usage
 
@@ -61,14 +70,6 @@ docker create \
   --restart unless-stopped \
   linuxserver/radarr
 ```
-
-You can choose between ,using tags, various branch versions of radarr, no tag is required to remain on the main branch.
-
-Add one of the tags,  if required,  to the linuxserver/radarr line of the run/create command in the following format, linuxserver/radarr:nightly
-
-The nightly branch and master branch can from time to time be the same version.
-
-HOWEVER , USE THE NIGHTLY BRANCH AT YOUR OWN PERIL !!!!!!!!!
 
 
 ### docker-compose
@@ -153,21 +154,41 @@ Below are the instructions for updating containers:
 * Start the new container: `docker start radarr`
 * You can also remove the old dangling images: `docker image prune`
 
-### Via Taisun auto-updater (especially useful if you don't remember the original parameters)
-* Pull the latest image at its tag and replace it with the same env variables in one shot:
-  ```
-  docker run --rm \
-  -v /var/run/docker.sock:/var/run/docker.sock taisun/updater \
-  --oneshot radarr
-  ```
-* You can also remove the old dangling images: `docker image prune`
-
 ### Via Docker Compose
 * Update all images: `docker-compose pull`
   * or update a single image: `docker-compose pull radarr`
 * Let compose update all containers as necessary: `docker-compose up -d`
   * or update a single container: `docker-compose up -d radarr`
 * You can also remove the old dangling images: `docker image prune`
+
+### Via Watchtower auto-updater (especially useful if you don't remember the original parameters)
+* Pull the latest image at its tag and replace it with the same env variables in one run:
+  ```
+  docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  containrrr/watchtower \
+  --run-once radarr
+  ```
+* You can also remove the old dangling images: `docker image prune`
+
+## Building locally
+
+If you want to make local modifications to these images for development purposes or just to customize the logic: 
+```
+git clone https://github.com/linuxserver/docker-radarr.git
+cd docker-radarr
+docker build \
+  --no-cache \
+  --pull \
+  -t linuxserver/radarr:latest .
+```
+
+The ARM variants can be built on x86_64 hardware using `multiarch/qemu-user-static`
+```
+docker run --rm --privileged multiarch/qemu-user-static:register --reset
+```
+
+Once registered you can define the dockerfile to use with `-f Dockerfile.aarch64`.
 
 ## Versions
 
